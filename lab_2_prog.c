@@ -86,11 +86,12 @@ size_t int_vector_get_capacity(const struct IntVector *str){
 
 int int_vector_push_back(struct IntVector *str, int item){
 	if(str->capacity<=str->size){
+		int* buffer = str->data;
 		str->data = realloc(str->data,(str->capacity)*2*(sizeof(int)));
-		str->capacity *= 2;
 		if(!str->data){
-			return -1;
+			str->data = buffer;
 		}
+		str->capacity *= 2;
 	}
 	if(str->capacity>str->size){
 		str->data[str->size] = item;
@@ -109,11 +110,13 @@ void int_vector_pop_back(struct IntVector *str){
 
 int int_vector_shrink_to_fit(struct IntVector *str){
 	if(str->size!=str->capacity){
+		int* buffer = str->data;
 		str->data = realloc(str->data,(str->size)*(sizeof(int)));
-		str->capacity = str->size;
 		if(!str->data){
+			str->data=buffer;
 			return -1;
 		}
+		str->capacity = str->size;
 	}
 	return 0;
 }
@@ -122,8 +125,10 @@ int int_vector_resize(struct IntVector *str, size_t new_size){
 	if(new_size>str->size){
 		if(str->capacity < new_size){
 			str->capacity = new_size;
+			int* buffer = str->data;
 			str->data = realloc(str->data,(str->capacity)*(sizeof(int)));
 			if(!str->data){
+				str->data = buffer;
 				return -1;
 			}
 		}
@@ -143,11 +148,13 @@ int int_vector_resize(struct IntVector *str, size_t new_size){
 
 int int_vector_reserve(struct IntVector *str, size_t new_capacity){
 	if(new_capacity>str->capacity){
+		int* buffer = str->data;
 		str->data = realloc(str->data,new_capacity*sizeof(int));
-		str->capacity = new_capacity;
 		if(!str->data){
+			str->data = buffer;
 			return -1;
 		}
+		str->capacity = new_capacity;
 	}
 	if(errno){
 		return -1;
